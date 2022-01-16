@@ -1,7 +1,7 @@
-// require the library
+
 const mongoose = require('mongoose');
 
-// creating Schema for Tasks
+
 const taskSchema = new mongoose.Schema({
     description: {
         type: String,

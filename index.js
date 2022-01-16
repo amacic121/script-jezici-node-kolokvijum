@@ -1,3 +1,4 @@
+const bp = require('body-parser')
 const express = require('express');
 const port = 3000;
 const db = require('./config/mongoose');
@@ -9,7 +10,8 @@ app.use(express.static("./views"));
 app.use(express.urlencoded());
 app.set('view engine', 'ejs');
 app.set('views', './views');
-
+app.use(bp.json())
+app.use(bp.urlencoded({ extended: true }))
 
 app.get('/', function(req, res){
     Task.find({}, function(err, task){
@@ -24,8 +26,6 @@ app.get('/', function(req, res){
         });
     }
 )});
-
-
 
 app.post('/task-lists/create-task', function(req, res){         /* pravimo taskove */
     
@@ -42,32 +42,36 @@ app.post('/task-lists/create-task', function(req, res){         /* pravimo tasko
     });
 });
 
-app.get('/task-lists/update-task', function(req, res){         /* updateujemo taskove */
-    
-    Task.put({
-        description: req.body.description,
-        typeOfTask: req.body.typeOfTask,
-        startingDate: req.body.startingDate,
-        dueDate: req.body.dueDate
-        }, function(err, newtask){
-        if(err){console.log('error in updating task', err); return;}
-    
-        return res.redirect('/');
-    });
+app.post('/task-lists/update-task', function(req, res){         /* updateujemo taskove */
+
+    Task.findByIdAndUpdate(
+        req.query.id,
+        {
+            description: req.body.description,
+            typeOfTask: req.body.typeOfTask,
+            startingDate: req.body.startingDate,
+            dueDate: req.body.dueDate
+        },
+        {new: true},
+        function (err, res) {
+          // Handle any possible database errors
+          if (err) {
+            console.log("we hit an error" + err);
+            res.json({
+              message: 'Database Update Failure'
+            });
+          }
+          console.log("This is the Response: " + res);
+        }
+      );
+
+      return res.redirect('/');
 });
-
-KITAAAAAAAAAa
-dsf
-sa
-fdsafas
-f
-saf
-saf
-
 
 app.get('/task-lists/delete-task', function(req, res){          /* brisemo taskove */
     // uzimamo id iz query
     let id = req.query;
+    
 
     // proveravamo koliko taskova brisemo u zavisnosti koliko smo ih stiklirali
     let count = Object.keys(id).length;
