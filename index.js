@@ -56,6 +56,14 @@ app.get('/task-lists/update-task', function(req, res){         /* updateujemo ta
     });
 });
 
+KITAAAAAAAAAa
+dsf
+sa
+fdsafas
+f
+saf
+saf
+
 
 app.get('/task-lists/delete-task', function(req, res){          /* brisemo taskove */
     // uzimamo id iz query
