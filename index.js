@@ -4,7 +4,10 @@ const port = 3000;
 const db = require('./config/mongoose');
 const  Task  = require('./models/task');
 const app = express();
-
+const User = require('./models/user');
+const users = require('./routes/users');
+const auth = require('./routes/auth')
+const jwt = require('jsonwebtoken');
 
 app.use(express.static("./views"));
 app.use(express.urlencoded());
@@ -12,6 +15,9 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
+app.use('/users', users);
+app.use('/auth', auth);
+
 
 app.get('/', function(req, res){
     Task.find({}, function(err, task){
@@ -26,6 +32,18 @@ app.get('/', function(req, res){
         });
     }
 )});
+
+app.get('/get-all-tasks', function(req, res){
+    Task.find({}, function(err, task){
+        if(err){
+            console.log('Error in fetching tasks from db');
+            return;
+        }
+
+        return res;
+    }
+)});
+
 
 app.post('/task-lists/create-task', function(req, res){         /* pravimo taskove */
     
@@ -42,10 +60,12 @@ app.post('/task-lists/create-task', function(req, res){         /* pravimo tasko
     });
 });
 
-app.post('/task-lists/update-task', function(req, res){         /* updateujemo taskove */
 
+
+
+app.post('/task-lists/update-task', function(req, res){         /* updateujemo taskove */
     Task.findByIdAndUpdate(
-        req.query.id,
+        req.body.id,
         {
             description: req.body.description,
             typeOfTask: req.body.typeOfTask,
