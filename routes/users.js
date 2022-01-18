@@ -4,6 +4,10 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const req = require('express/lib/request');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+
 
 router.post('/register', async (req,res) => {
     const {error} = validate(req.body);
@@ -17,21 +21,25 @@ router.post('/register', async (req,res) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        role: req.body.role,
         phoneNumber: req.body.phoneNumber
     });
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
    
     await user.save();
+    const token = user.generateAuthToken();
 
-    res.send(user);
+    res.header('token', token).send(user.isAdmin);
 }); 
 
-router.get('/findUserByUsername', async (req, res) => {
-    let user = await User.findOne({username: req.body.username});
-    if(!user && user === null){
-        return res.status(300).send('No user found')
-    }
-    return user;
-});
+// router.get('/findUserByUsername', async (req, res) => {
+//     let user = await User.findOne({username: req.body.username});
+//     if(!user && user === null){
+//         return res.status(300).send('No user found')
+//     }
+//     return user;
+// });
+
 
 module.exports = router;

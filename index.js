@@ -8,6 +8,10 @@ const User = require('./models/user');
 const users = require('./routes/users');
 const auth = require('./routes/auth')
 const jwt = require('jsonwebtoken');
+const admin = require('./roleManagement/admin');
+var LocalStorage = require('node-localstorage').LocalStorage,
+localStorage = new LocalStorage('./scratch');
+
 
 app.use(express.static("./views"));
 app.use(express.urlencoded());
@@ -45,7 +49,7 @@ app.get('/get-all-tasks', function(req, res){
 )});
 
 
-app.post('/task-lists/create-task', function(req, res){         /* pravimo taskove */
+app.post('/task-lists/create-task', admin ,function(req, res){         /* pravimo taskove */
     
     Task.create({
         description: req.body.description,

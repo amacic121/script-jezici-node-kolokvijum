@@ -1,6 +1,7 @@
 const { json } = require('body-parser');
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 
 const userSchema = new mongoose.Schema({
@@ -24,15 +25,24 @@ const userSchema = new mongoose.Schema({
         minlength: 5,
         maxlength: 2056, 
     },
-    role: {
-        type: String,
-        required: true
-    },
     phoneNumber: {
         type: String,
         required: true
-    }
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    isModerator: { 
+      type: Boolean,
+      default: false
+    },
 });
+
+userSchema.methods.generateAuthToken = function() { 
+    const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin, isModerator: this.isModerator }, 'jwtPrivateKey');
+    return token;
+  }
 
 const User = mongoose.model('User', userSchema);
 
@@ -43,7 +53,6 @@ function validateUser(user){
         name: Joi.string().min(3).max(100).required(),
         email: Joi.string().min(6).max(255).required().email(),
         password: Joi.string().min(5).max(255).required(),
-        role: Joi.string().min(2).max(100).required(),
         phoneNumber: Joi.string().min(7).max(100).required()
     });
     return schema.validate(user);

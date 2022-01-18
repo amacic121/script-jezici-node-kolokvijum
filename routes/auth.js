@@ -6,16 +6,23 @@ const { func } = require('joi');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
+const bcrypt = require('bcrypt');
 
+router.post('/login', async function (req, res) {
 
-router.post('/login', function (req, res) {
+    let user = await User.findOne({username: req.body.username});
+    if(!user){
+        return res.status(400).send("Nepostoji user");
+    }
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) return res.status(400).send('Invalid email or password.');
 
-    let user = findUserByUsername(req, res);
+    const token = jwt.sign({ user }, 'jwtPrivateKey');
 
-    const token = jwt.sign({ user }, 'password');
-    res.json({
-        token: token
-    });
+    res.send(token);
+    // res.json({
+    //     token: token
+    // });
 
 });
 
@@ -45,12 +52,12 @@ function ensureToken(req, res, next) {
     }
 }
 
-async function findUserByUsername(req, res) {
-    let user = await User.findOne({ username: req.body.username });
-    console.log(user);
-    if (user === null) {
-        console.log("Ne postoji takav user");
+async function findUserByUsername(req){
+    let user = await User.findOne({ username: req.body.username, password: req.body.password })
+    if (user === null || user.password != req.body.password) {
+        return;
     }
+    user = await User.findOne({ username: req.body.username, password: req.body.password }).select("-password");
     return user;
 }
 
