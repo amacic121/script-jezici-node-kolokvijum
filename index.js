@@ -49,8 +49,8 @@ app.get('/get-all-tasks', function(req, res){
 )});
 
 
-app.post('/task-lists/create-task', admin ,function(req, res){         /* pravimo taskove */
-    
+app.post('/task-lists/create-task' ,function(req, res){         /* pravimo taskove */
+    console.log('za sada radi');
     Task.create({
         description: req.body.description,
         typeOfTask: req.body.typeOfTask,
@@ -101,7 +101,7 @@ app.get('/task-lists/delete-task', function(req, res){          /* brisemo tasko
     let count = Object.keys(id).length;
     for(let i=0; i < count ; i++){
         
-        // finding and deleting tasks from the DB one by one using id
+        
         Task.findByIdAndDelete(Object.keys(id)[i], function(err){
         if(err){
             console.log('error in deleting task');

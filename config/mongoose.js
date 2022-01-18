@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 
-mongoose.connect('mongodb://localhost/Tasks');
+mongoose.connect('mongodb://localhost/TaskManager');
 
 
 const db = mongoose.connection;

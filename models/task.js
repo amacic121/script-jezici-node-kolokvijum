@@ -21,6 +21,16 @@ const taskSchema = new mongoose.Schema({
     }
 });
 
+// function validateUser(user){
+//     const schema = Joi.object({
+//         username: Joi.string().min(3).max(100).required(),
+//         name: Joi.string().min(3).max(100).required(),
+//         email: Joi.string().min(6).max(255).required().email(),
+//         password: Joi.string().min(5).max(255).required(),
+//         phoneNumber: Joi.string().min(7).max(100).required()
+//     });
+//     return schema.validate(user);
+// }
 
 const Task = mongoose.model('Task', taskSchema);
 
