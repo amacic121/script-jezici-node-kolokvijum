@@ -1,16 +1,7 @@
-const bp = require('body-parser')
 const express = require('express');
-const port = 3000;
-const db = require('../config/mongoose');
-const Task = require('../models/task');
-const app = express();
-const User = require('../models/user');
-const users = require('../routes/users');
-const auth = require('../routes/auth')
-const jwt = require('jsonwebtoken');
-const Joi = require('joi');
-const admin = require('../roleManagement/admin');
+const {Task,validate} = require('../models/task');
 const router = express.Router();
+const Joi = require('joi');
 
 router.get('/', function (req, res) {
     Task.find({}, function (err, task) {
@@ -27,15 +18,21 @@ router.get('/', function (req, res) {
     )
 });
 
+/* pravimo taskove */
+router.post('/task-lists/create-task', function (req, res) {
 
-router.post('/task-lists/create-task', function (req, res) {         /* pravimo taskove */
-    console.log('za sada radi');
+    const { error } = validate(req.body);
+    if (error) {
+        console.log('error in creating task', error ); 
+        return res.redirect('/admin');
+    }
+                       
     Task.create({
         description: req.body.description,
         typeOfTask: req.body.typeOfTask,
         startingDate: req.body.startingDate,
         dueDate: req.body.dueDate
-    }, function (err, newtask) {
+    }, function (err) {
         if (err) { console.log('error in creating task', err); return; }
 
         return res.redirect('/admin');
@@ -98,7 +95,7 @@ module.exports = router;
 
 
 router.get('/get-all-tasks', function (req, res) {
-    Task.find({}, function (err, task) {
+    Task.find({}, function (err) {
         if (err) {
             console.log('Error in fetching tasks from db');
             return;

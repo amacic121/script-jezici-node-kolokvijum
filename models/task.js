@@ -1,4 +1,4 @@
-
+const Joi = require('joi');
 const mongoose = require('mongoose');
 
 
@@ -21,19 +21,18 @@ const taskSchema = new mongoose.Schema({
     }
 });
 
-function validateTask(tasl){
+function validateTask(task) {
     const schema = Joi.object({
-        description: Joi.string().min(3).max(500).required(),
+        description: Joi.string().min(1).max(500).required(),
         typeOfTask: Joi.string().required(),
-        typeOfTask: Joi.string({ minDomainSegments: 5, tlds: { allow: ['Regular Task', 'Urgent Task' , 'Short Task' , 'Long Task','Other'] } }).required(),
-        startingDate: Joi.string().min(6).max(255).required().Date(),
-        dueDate: Joi.string().min(5).max(255).required().Date(),
-        
+        startingDate: Joi.date().required(),
+        // dueDate: Joi.string().min(5).max(255).required(),
+        dueDate: Joi.date().greater(Joi.ref('startingDate')).required()
     });
     return schema.validate(task);
 }
 
 const Task = mongoose.model('Task', taskSchema);
 
-// exporting the Schema
-module.exports = Task;
+exports.Task = Task;
+exports.validate = validateTask;
