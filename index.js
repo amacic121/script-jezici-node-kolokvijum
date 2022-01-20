@@ -9,6 +9,7 @@ const users = require('./routes/users');
 const auth = require('./routes/auth')
 const jwt = require('jsonwebtoken');
 const admin = require('./roleManagement/admin');
+const tasks = require('./routes/tasks');
 var LocalStorage = require('node-localstorage').LocalStorage,
 localStorage = new LocalStorage('./scratch');
 
@@ -19,97 +20,10 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
-app.use('/users', users);
-app.use('/auth', auth);
+app.use('/admin/users', users);
+app.use('/admin/auth', auth);
+app.use('/admin', tasks);
 
-
-app.get('/', function(req, res){
-    Task.find({}, function(err, task){
-        if(err){
-            console.log('Error in fetching tasks from db');
-            return;
-        }
-
-        return res.render('home', {
-            tittle: "Home",
-            task: task
-        });
-    }
-)});
-
-app.get('/get-all-tasks', function(req, res){
-    Task.find({}, function(err, task){
-        if(err){
-            console.log('Error in fetching tasks from db');
-            return;
-        }
-
-        return res;
-    }
-)});
-
-
-app.post('/task-lists/create-task' ,function(req, res){         /* pravimo taskove */
-    console.log('za sada radi');
-    Task.create({
-        description: req.body.description,
-        typeOfTask: req.body.typeOfTask,
-        startingDate: req.body.startingDate,
-        dueDate: req.body.dueDate
-        }, function(err, newtask){
-        if(err){console.log('error in creating task', err); return;}
-        
-        return res.redirect('/');
-
-    });
-});
-
-
-
-
-app.post('/task-lists/update-task', function(req, res){         /* updateujemo taskove */
-    Task.findByIdAndUpdate(
-        req.body.id,
-        {
-            description: req.body.description,
-            typeOfTask: req.body.typeOfTask,
-            startingDate: req.body.startingDate,
-            dueDate: req.body.dueDate
-        },
-        {new: true},
-        function (err, res) {
-          // Handle any possible database errors
-          if (err) {
-            console.log("we hit an error" + err);
-            res.json({
-              message: 'Database Update Failure'
-            });
-          }
-          console.log("This is the Response: " + res);
-        }
-      );
-
-      return res.redirect('/');
-});
-
-app.get('/task-lists/delete-task', function(req, res){          /* brisemo taskove */
-    // uzimamo id iz query
-    let id = req.query;
-    
-
-    // proveravamo koliko taskova brisemo u zavisnosti koliko smo ih stiklirali
-    let count = Object.keys(id).length;
-    for(let i=0; i < count ; i++){
-        
-        
-        Task.findByIdAndDelete(Object.keys(id)[i], function(err){
-        if(err){
-            console.log('error in deleting task');
-            }
-        })
-    }
-    return res.redirect('/'); 
-});
 
 
 app.listen(port, function(err){
@@ -119,3 +33,10 @@ app.listen(port, function(err){
 
     console.log(`Server is running on port : ${port}`);
 });
+
+
+
+
+
+
+
