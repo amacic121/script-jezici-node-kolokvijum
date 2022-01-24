@@ -30,7 +30,7 @@ router.post('/register', async (req,res) => {
     await user.save();
     const token = user.generateAuthToken();
 
-    res.header('token', token).send(user.isAdmin);
+    res.header('token', token).send(user);
 }); 
 
 // router.get('/findUserByUsername', async (req, res) => {

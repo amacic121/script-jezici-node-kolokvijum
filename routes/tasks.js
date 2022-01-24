@@ -1,5 +1,5 @@
 const express = require('express');
-const {Task,validate} = require('../models/task');
+const { Task, validate } = require('../models/task');
 const router = express.Router();
 const Joi = require('joi');
 
@@ -23,10 +23,10 @@ router.post('/task-lists/create-task', function (req, res) {
 
     const { error } = validate(req.body);
     if (error) {
-        console.log('error in creating task', error ); 
+        console.log('error in creating task', error);
         return res.redirect('/admin');
     }
-                       
+
     Task.create({
         description: req.body.description,
         typeOfTask: req.body.typeOfTask,
